@@ -1,0 +1,24 @@
+section{
+   display: flex;
+  text-align: center;
+}
+.b1{
+  color: white;
+  text-decoration: none;
+}
+.b2:hover{
+  color: black;
+}
+.acc-w{
+  width: 50vw;
+  margin-top: 50px;
+}
+.mar{
+  margin-top: 50px;
+}
+.im{
+  height: 23vh !important;
+}
+.img{
+  height: 40px!important;
+}
