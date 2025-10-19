@@ -19,6 +19,8 @@ const Header = () => {
   confirmButtonText: "Yes,Logout!"
 }).then((result) => {
   if (result.isConfirmed) {
+      localStorage.removeItem('token');
+  localStorage.removeItem('user');
     dispatch(logout());
     Swal.fire({
       
@@ -35,7 +37,7 @@ const Header = () => {
    
   
    const dispatch = useDispatch()
-   const {isLoggedin,user}= useSelector((state)=>state.auth)
+   const {isLoggedIn,user}= useSelector((state)=>state.auth)
    const handleLogout = () => {
   
       handleswan()
@@ -101,7 +103,7 @@ const Header = () => {
           {/* Auth buttons */}
           <div className="text-end">
             
-            {isLoggedin?( <>
+            {isLoggedIn?( <>
             <div className="d-flex gap-2 justify-content-center align-items-center">
              <FaRegCircleUser size={29} />
 

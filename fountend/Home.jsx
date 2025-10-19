@@ -1,11 +1,12 @@
 import { BookOpen, Trophy, Brain, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector} from "react-redux" 
 
 const Home = () => {
+  const navigate = useNavigate();
+  const {isLoggedIn} = useSelector(state=>state.auth)
   const handleStartQuiz = () => {
-    // This will be handled by your router setup
-    // You can use: navigate('/quiz') or window.location.href = '/quiz'
-    console.log('Start quiz clicked');
+   {isLoggedIn ? navigate('/quizlist') : navigate('/login') }
   };
 
   const features = [
@@ -88,7 +89,7 @@ const Home = () => {
           <p className="lead mb-4 mx-auto" style={{maxWidth: '800px', color: '#4b5563'}}>
             Challenge yourself with engaging quizzes and expand your knowledge across multiple subjects
           </p>
-        <Link to="http://localhost:5173/login"> <button
+         <button
             onClick={handleStartQuiz}
             className="btn btn-primary text-white"
             style={buttonStyle}
@@ -96,7 +97,7 @@ const Home = () => {
             onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
           >
             Start Quiz Now
-          </button> </Link> 
+          </button> 
         </div>
 
         {/* Features Section */}

@@ -120,11 +120,12 @@ const [form, setform] = useState({
     // ✅ check if login is actually successful
     if (res.data?.status === 1 || res.data?.message === "Login successful") {
      
-
+   localStorage.setItem('token',res.data.token)
+   localStorage.setItem('user',JSON.stringify(res.data.user))
       dispatch(login(res.data.user));
       navigate("/quizlist");
       showCustomUserToast(res.data.user.name);
-   
+     
 
     } else {
       toast.error(res.data?.message || "Login failed");
