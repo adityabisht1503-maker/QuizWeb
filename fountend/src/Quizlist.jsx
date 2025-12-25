@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "./api";
 
 const Quizlist = () => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const Quizlist = () => {
 
   // Fetch all custom quizzes with full data
   const fetchquiz = () => {
-    axios
-      .get("http://localhost:3000/ct/list")
+    api
+      .get("/ct/list")
       .then((res) => {
         setCustomQuizzes(res.data.quiz); // ✅ Store full quiz objects
       })

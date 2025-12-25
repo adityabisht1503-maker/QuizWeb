@@ -8,6 +8,7 @@ import QuizRules from "./Quizrules";
 import { useSelector } from "react-redux";
 import Loader from "./Loader";
 import { toast, ToastContainer } from "react-toastify";
+import api from "./api";
 
 const HTML = () => {
   const [quiz, setQuiz] = useState([]);
@@ -29,8 +30,8 @@ const addscore = async () => {
       Score: score,
     });
 
-    const response = await axios.post(
-      "http://localhost:3000/score/add", // ✅ URL as string
+    const response = await api.post(
+      "/score/add", // ✅ URL as string
       {
         Quizname: "HTML",
         Name: user?.name,
@@ -48,8 +49,8 @@ const dounloudpdf = async () => {
   try {
     setload(true);
 
-    const response = await axios.post(
-      "http://localhost:3000/score/add",
+    const response = await api.post(
+      "/score/add",
       { Quizname: "HTML", Name: user?.name, Score: score },
       { responseType: "blob" }
     );
@@ -110,7 +111,7 @@ Tabswitch(() => {
 });
    
     const fetchQuiz = () => {
-      axios.get(`http://localhost:3000/html/list`)
+      api.get("/html/list")
         .then((res) => res.data)
        .then((data) => {
          const questions = data.quiz;

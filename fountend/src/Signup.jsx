@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from 'sweetalert2'
+import api from "./api";
 
 const Signup = () => {
 
@@ -35,7 +36,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3000/api/auth/signup", form);
+      const res = await api.post("/api/auth/signup", form);
 
       // Assuming API returns success with status or message
       if (res.data?.status === 1 || res.data?.message === "Signup successful") {

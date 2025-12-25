@@ -8,6 +8,7 @@ import QuizRules from "./Quizrules";
 import { useSelector } from "react-redux";
 import Loader from "./Loader";
 import { toast, ToastContainer } from "react-toastify";
+import api from "./api";
 
 const Osquiz = () => {
   const [quiz, setQuiz] = useState([]);
@@ -27,7 +28,7 @@ const Osquiz = () => {
       Name: user?.name,
       Score: score,
     });
-      axios.post(`http://localhost:3000/score/add`,{
+      api.post("/score/add",{
         Quizname:"DBMS",
         Name:user?.name,
         Score:score,
@@ -37,8 +38,8 @@ const Osquiz = () => {
     const dounloudpdf = async () => {
   try {
     setload(true);
-    const response = await axios.post(
-      "http://localhost:3000/score/add",
+    const response = await api.post(
+      "/score/add",
       {
         Quizname: "DBMS",
         Name: user?.name,
@@ -114,7 +115,7 @@ const cheat = ()=>{
 });
  
     const fetchQuiz = () => {
-      axios.get(`http://localhost:3000/db/list`)
+      api.get("/db/list")
         .then((res) => res.data)
        .then((data) => {
          const questions = data.quiz;

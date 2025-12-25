@@ -8,6 +8,7 @@ import QuizRules from "./Quizrules";
 import { useSelector } from "react-redux";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
+import api from "./api";
 
 const Custom = () => {
   const [quiz, setQuiz] = useState([]);
@@ -29,7 +30,7 @@ const Custom = () => {
       Name: user?.name,
       Score: score,
     });
-    axios.post(`http://localhost:3000/score/add`, {
+    api.post("/score/add", {
       Quizname: quizName,
       Name: user?.name,
       Score: score,
@@ -39,8 +40,8 @@ const Custom = () => {
   const dounloudpdf = async () => {
     try {
       setload(true);
-      const response = await axios.post(
-        "http://localhost:3000/score/add",
+      const response = await api.post(
+        "/score/add",
         {
           Quizname: quizName,
           Name: user?.name,
@@ -113,8 +114,8 @@ const Custom = () => {
     return;
   }
 
-  axios
-    .get(`http://localhost:3000/ct/list`)
+  api
+    .get("/ct/list")
     .then((res) => res.data)
     .then((data) => {
       const quizList = data.quiz;

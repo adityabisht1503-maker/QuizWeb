@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from './api';
 
 const Customquiz = () => {
   const [step, setStep] = useState('quizName'); // 'quizName', 'addQuestions', 'complete'
@@ -73,7 +74,7 @@ const Customquiz = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/ct/customadd', {
+      const response = await api("/ct/customadd", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

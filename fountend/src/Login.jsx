@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import authslice, { login } from "./store/authslice";
+import api from "./api";
 const Login = () => {
 
 
@@ -115,7 +116,7 @@ const [form, setform] = useState({
  const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const res = await axios.post("http://localhost:3000/api/auth/login", form);
+    const res = await api.post("/api/auth/login", form);
 
     // ✅ check if login is actually successful
     if (res.data?.status === 1 || res.data?.message === "Login successful") {
