@@ -1,6 +1,10 @@
 const About = () => {
   return (
+    
+    
     <>
+    
+    
       
 
       {/* Main Content */}

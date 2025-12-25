@@ -28,7 +28,7 @@ const Header = () => {
       icon: "success",
       
     });
-    navigate("/home")
+    navigate ("/home")
   }
 });
   }
@@ -110,7 +110,7 @@ const Header = () => {
             <span className="text-capitalize">{user?.name}</span>
             <button
               type="button"
-              className="btn btn-outline-light"
+              className="btn btn-outline-light ms-4"
               onClick={handleLogout}
             >
               Logout

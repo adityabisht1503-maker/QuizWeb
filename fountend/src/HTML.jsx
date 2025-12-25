@@ -5,6 +5,9 @@ import useAntiCheat from "./Anticheat";
 import Swal from "sweetalert2";
 import Tabswitch from "./Tabswitch";
 import QuizRules from "./Quizrules";
+import { useSelector } from "react-redux";
+import Loader from "./Loader";
+import { toast, ToastContainer } from "react-toastify";
 
 const HTML = () => {
   const [quiz, setQuiz] = useState([]);
@@ -13,8 +16,59 @@ const HTML = () => {
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [answers, setAnswers] = useState([]);
+  const [load, setload] = useState(false)
  const navigate = useNavigate()
      const [hasStarted, setHasStarted] = useState(false);
+         const {user}= useSelector((state)=>state.auth)
+
+const addscore = async () => {
+  try {
+    console.log("Sending data:", {
+      Quizname: "HTML",
+      Name: user?.name,
+      Score: score,
+    });
+
+    const response = await axios.post(
+      "http://localhost:3000/score/add", // ✅ URL as string
+      {
+        Quizname: "HTML",
+        Name: user?.name,
+        Score: score,
+      }
+    );
+
+    console.log("Response from server:", response.data);
+  } catch (error) {
+    console.error("Error sending score:", error);
+    alert("Could not submit score");
+  }
+};
+const dounloudpdf = async () => {
+  try {
+    setload(true);
+
+    const response = await axios.post(
+      "http://localhost:3000/score/add",
+      { Quizname: "HTML", Name: user?.name, Score: score },
+      { responseType: "blob" }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${user?.name}_certificate.pdf`;
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    alert("Could not download certificate");
+  } finally {
+    toast.success("Download Succesfully")
+    setload(false);
+  }
+};
+
 
 const cheat = ()=>{
   Swal.fire({
@@ -33,6 +87,7 @@ const cheat = ()=>{
       text: "Your answers have been submitted due to a violation of quiz rules.",
       icon: "success"
     });
+    addscore();
   }
 });
 }
@@ -53,20 +108,27 @@ Tabswitch(() => {
     
   cheat()
 });
-    useEffect(() => {
+   
     const fetchQuiz = () => {
       axios.get(`http://localhost:3000/html/list`)
         .then((res) => res.data)
-        .then((data) => {
-          console.log(data.quiz);
-          setQuiz(data.quiz);
+       .then((data) => {
+         const questions = data.quiz;
+           const shuffled = questions.sort(() => 0.5 - Math.random());
+           const randomTen = shuffled.slice(0, 10);
+           setQuiz(randomTen);
+        console.log(randomTen);
         })
         .catch((error) => {
           console.error("Error fetching quiz:", error);
         });
     };
-    fetchQuiz();
-  }, []);
+
+    useEffect(() => {
+     fetchQuiz()
+    }, [])
+    
+   
   const handlehome=()=>{
   navigate("/quizlist")
   }
@@ -96,22 +158,28 @@ Tabswitch(() => {
       setSelectedAnswer("");
     } else {
       setShowResult(true);
+      addscore();
     }
   };
 
   const handleRestart = () => {
+   
     setCurrentQuestion(0);
     setSelectedAnswer("");
     setScore(0);
     setShowResult(false);
     setAnswers([]);
+    fetchQuiz();
   };
+  
 
     if (!hasStarted) {
   return <QuizRules onAccept={() => setHasStarted(true)} />;
 }
+
   if (quiz.length === 0) {
     return (
+      
       <div className="container py-5">
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
@@ -122,11 +190,15 @@ Tabswitch(() => {
       </div>
     );
   }
-
+     
   if (showResult) {
     const percentage = ((score / quiz.length) * 100).toFixed(1);
+   
+    return (<>
     
-    return (
+         {load && <Loader/>}
+          
+
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-8">
@@ -141,6 +213,16 @@ Tabswitch(() => {
                     You scored {score} out of {quiz.length}
                   </p>
                 </div>
+                 {score >= 3 && (
+  <button
+    onClick={dounloudpdf}
+    type="button" 
+    className="btn btn-secondary btn-lg mt-4 px-5"
+  >
+    Download Certificate
+  </button>
+)}
+
 
                 {/* Review Answers */}
                 <div className="text-start mt-5">
@@ -165,6 +247,7 @@ Tabswitch(() => {
                     </div>
                   ))}
                 </div>
+               
 
                 <button 
                   onClick={handleRestart}
@@ -185,6 +268,7 @@ Tabswitch(() => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 

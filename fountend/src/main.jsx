@@ -21,6 +21,9 @@ import CSS from './CSS.jsx'
 import { Provider } from 'react-redux'
 import store from './store/store.jsx'; 
 import QuizRules from './Quizrules.jsx'
+import Customquiz from './Customquiz.jsx'
+import Custom from './Custom.jsx'
+import ProtectedRoute from './ProtectedRoute.jsx'
 
 const route = createBrowserRouter([{path:"/",element:<App/>,
   children:[
@@ -30,12 +33,16 @@ const route = createBrowserRouter([{path:"/",element:<App/>,
     {path:"Signup",element:<Signup/>},
     {path:"Faq",element:<Faq/>},
     {path:"About",element:<About/>},
-    {path:"Quizlist",element:<Quizlist/>},
+    {element:<ProtectedRoute/>,
+    children:[{path:"Quizlist",element:<Quizlist/>},
        {path:"osquiz",element:<Osquiz/>},
         {path:"dbquiz",element:<DBquiz/>},
         {path:"htmlquiz",element:<HTML/>},
         {path:"cssquiz",element:<CSS/>},
          {path:"Quizrules",element:<QuizRules/>},
+         {path:"Customquiz",element:<Customquiz/>},
+      { path: "Custom/:id", element: <Custom/> }]}
+    
   ]
 }])
  

@@ -1,27 +1,43 @@
-import { useEffect, useState } from 'react'
-import axios from "axios"
-import Swal from 'sweetalert2';
-import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Quizlist = ()=>{
+const Quizlist = () => {
+  const navigate = useNavigate();
+  const [customQuizzes, setCustomQuizzes] = useState([]);
 
-  const navigate = useNavigate()
-  
-  const [quiz, setquiz] = useState([])
+  const handleclick = () => {
+    navigate('/osquiz');
+  };
+  const handleclick1 = () => {
+    navigate('/dbquiz');
+  };
+  const handleclick2 = () => {
+    navigate('/htmlquiz');
+  };
+  const handleclick3 = () => {
+    navigate('/cssquiz');
+  };
+  const Custom = () => {
+    navigate('/Customquiz');
+  };
 
-  const handleclick=()=>{
-   navigate('/osquiz')
-  }
-  const handleclick1=()=>{
-        navigate('/dbquiz')
-  }
-  const handleclick2=()=>{
-    navigate('/htmlquiz')
-  }
-  const handleclick3=()=>{
-        navigate('/cssquiz')
-  }
-  
+  // Fetch all custom quizzes with full data
+  const fetchquiz = () => {
+    axios
+      .get("http://localhost:3000/ct/list")
+      .then((res) => {
+        setCustomQuizzes(res.data.quiz); // ✅ Store full quiz objects
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchquiz();
+  }, []);
+
   return (
     <>
       <style>{`
@@ -30,6 +46,22 @@ const Quizlist = ()=>{
           margin: 0;
           padding: 0;
         }
+          .quiz-card {
+  animation: float 3s ease-in-out infinite;
+}
+
+.quiz-card:nth-child(even) {
+  animation-delay: 0.6s;
+}
+
+.quiz-card:nth-child(odd) {
+  animation-delay: 1.2s;
+}
+
+.quiz-card:hover {
+  animation: none;
+}
+
 
         .mar {
           min-height: 100vh;
@@ -180,6 +212,33 @@ const Quizlist = ()=>{
           transform: translateY(0);
         }
 
+        .custom-badge {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+          color: white;
+          padding: 5px 12px;
+          border-radius: 15px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+          z-index: 10;
+        }
+
+        .coming-soon-ribbon {
+          position: absolute;
+          top: 15px;
+          right: -10px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 6px 20px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+          z-index: 10;
+        }
+
         @keyframes float {
           0%, 100% {
             transform: translateY(0);
@@ -218,10 +277,12 @@ const Quizlist = ()=>{
             width: 100%;
             max-width: 350px;
           }
+            
         }
       `}</style>
 
       <main className='d-flex gap-4 justify-content-center align-items-center mar flex-wrap'>
+        {/* Pre-built quizzes */}
         <div className="card quiz-card">
           <div className="quiz-card-img-wrapper">
             <img src="/1.jpg" className="card-img-top" alt="Operating System" />
@@ -272,21 +333,86 @@ const Quizlist = ()=>{
 
         <div className="card quiz-card">
           <div className="quiz-card-img-wrapper">
-            <img src="/CSS.png" className="card-img-top" alt="JavaScript" />
+            <img src="/CSS.png" className="card-img-top" alt="CSS" />
             <div className="quiz-card-img-overlay">
               <div className="overlay-icon">⚡</div>
             </div>
           </div>
           <div className="card-body">
-            <h5 className="card-title">Javascript</h5>
+            <h5 className="card-title">CSS</h5>
             <p className="card-text">
-              🧠 Test Your JS Knowledge: 10 Quick Questions!
+              🧠 Test Your CSS Knowledge: 10 Quick Questions!
             </p>
             <button onClick={handleclick3} className="quiz-btn">🚀 Let's Go</button>
+          </div>
+        </div>
+
+        {/* Custom quizzes - dynamically render each with unique ID */}
+        {customQuizzes.map(quiz => (
+          <div className="card quiz-card" key={quiz._id}>
+            <div className="quiz-card-img-wrapper">
+              <img src="/custom1.png" className="card-img-top" alt={quiz.Quizname} />
+              <div className="quiz-card-img-overlay">
+                <div className="overlay-icon">🎯</div>
+              </div>
+              <div className="custom-badge">Custom</div>
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">{quiz.Quizname}</h5>
+              <p className="card-text">
+                🧠 {quiz.questions.length} Questions • Test your knowledge!
+              </p>
+              <button 
+                onClick={() => navigate(`/Custom/${quiz._id}`)} 
+                className="quiz-btn"
+              >
+                🚀 Let's Go
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Create Custom Quiz Card */}
+        <div className="card quiz-card">
+          <div className="quiz-card-img-wrapper">
+            <img src="/custom.webp" className="card-img-top" alt="Custom Quiz" />
+            <div className="quiz-card-img-overlay">
+              <div className="overlay-icon">✨</div>
+            </div>
+            <div className="custom-badge">Your Creation</div>
+          </div>
+          <div className="card-body">
+            <h5 className="card-title">🎨 Custom Quiz</h5>
+            <p className="card-text">
+              Design your own quiz with personalized questions and topics!
+            </p>
+            <button onClick={Custom} className="quiz-btn">
+              <span>🚀</span>
+              <span>Create Now</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Coming Soon Card */}
+        <div className="card quiz-card">
+          <div className="quiz-card-img-wrapper">
+            <img src="/comingsoon.png" className="card-img-top" alt="Coming Soon" />
+            <div className="quiz-card-img-overlay">
+              <div className="overlay-icon">✨</div>
+            </div>
+            <div className="coming-soon-ribbon">Coming Soon</div>
+          </div>
+          <div className="card-body">
+            <h5 className="card-title">More Quizzes On The Way!</h5>
+            <p className="card-text">
+              🚀 New topics and challenges are being crafted just for you. Stay tuned!
+            </p>
           </div>
         </div>
       </main>
     </>
   );
-}
-export default Quizlist
+};
+
+export default Quizlist;

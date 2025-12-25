@@ -5,6 +5,9 @@ import useAntiCheat from "./Anticheat";
 import Swal from "sweetalert2";
 import Tabswitch from "./Tabswitch";
 import QuizRules from "./Quizrules";
+import { useSelector } from "react-redux";
+import Loader from "./Loader";
+import { toast, ToastContainer } from "react-toastify";
 
 const Osquiz = () => {
   const [quiz, setQuiz] = useState([]);
@@ -14,7 +17,63 @@ const Osquiz = () => {
   const [showResult, setShowResult] = useState(false);
   const [answers, setAnswers] = useState([]);
  const navigate = useNavigate()
+   const [load, setload] = useState(false)
+
      const [hasStarted, setHasStarted] = useState(false);
+         const {user}= useSelector((state)=>state.auth)
+          const addscore = () => {
+        console.log("Sending data:", {
+          Quizname:"DBMS",
+      Name: user?.name,
+      Score: score,
+    });
+      axios.post(`http://localhost:3000/score/add`,{
+        Quizname:"DBMS",
+        Name:user?.name,
+        Score:score,
+      });
+        
+    };
+    const dounloudpdf = async () => {
+  try {
+    setload(true);
+    const response = await axios.post(
+      "http://localhost:3000/score/add",
+      {
+        Quizname: "DBMS",
+        Name: user?.name,
+        Score: score,
+      },
+      {
+        responseType: "blob", // 🔑 IMPORTANT
+      }
+    );
+
+    // Create file download
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${user?.name}_certificate.pdf`
+    );
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error("Certificate download failed:", error);
+    alert("Could not download certificate");
+  }
+    
+   finally {
+    toast.success("Download Succesfully")
+    setload(false);
+  }
+};
+
 
 const cheat = ()=>{
     Swal.fire({
@@ -33,6 +92,7 @@ const cheat = ()=>{
         text: "Your answers have been submitted due to a violation of quiz rules.",
         icon: "success"
       });
+      addscore();
     }
   });
   }
@@ -52,18 +112,22 @@ const cheat = ()=>{
  useAntiCheat(() => {
   cheat()
 });
-    useEffect(() => {
+ 
     const fetchQuiz = () => {
       axios.get(`http://localhost:3000/db/list`)
         .then((res) => res.data)
-        .then((data) => {
-          console.log(data.quiz);
-          setQuiz(data.quiz);
+       .then((data) => {
+         const questions = data.quiz;
+           const shuffled = questions.sort(() => 0.5 - Math.random());
+           const randomTen = shuffled.slice(0, 10);
+           setQuiz(randomTen);
+        console.log(randomTen);
         })
         .catch((error) => {
           console.error("Error fetching quiz:", error);
         });
     };
+       useEffect(() => {
     fetchQuiz();
   }, []);
 
@@ -96,6 +160,7 @@ const cheat = ()=>{
       setSelectedAnswer("");
     } else {
       setShowResult(true);
+      addscore();
     }
   };
 
@@ -105,6 +170,7 @@ const cheat = ()=>{
     setScore(0);
     setShowResult(false);
     setAnswers([]);
+    fetchQuiz();
   };
     if (!hasStarted) {
   return <QuizRules onAccept={() => setHasStarted(true)} />;
@@ -127,6 +193,12 @@ const cheat = ()=>{
     const percentage = ((score / quiz.length) * 100).toFixed(1);
     
     return (
+    <>
+      
+      {load && <Loader/>}
+                
+      
+      
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-8">
@@ -137,10 +209,28 @@ const cheat = ()=>{
                   <h3 className="display-1 fw-bold" style={{color: percentage >= 70 ? '#198754' : percentage >= 50 ? '#ffc107' : '#dc3545'}}>
                     {percentage}%
                   </h3>
+                 
+                  
                   <p className="lead">
                     You scored {score} out of {quiz.length}
+                    
+                    
                   </p>
+                  
+                  
+                  
                 </div>
+                {score >= 3 && (
+  <button
+    onClick={dounloudpdf}
+    type="button"
+    className="btn btn-secondary btn-lg mt-4 px-5"
+  >
+    Download Certificate
+  </button>
+)}
+                
+                
 
                 {/* Review Answers */}
                 <div className="text-start mt-5">
@@ -185,6 +275,7 @@ const cheat = ()=>{
           </div>
         </div>
       </div>
+      </>
     );
   }
 
