@@ -5,12 +5,16 @@ const { Signup, Login } = require("../controller/authcontroller")
 const {  quizlist, insertquiz } = require("../controller/quizcontrooler")
 const { insertHMTL, HTMLlist } = require("../controller/HTMLcontroller")
 const { insertCSS, CSSlist } = require("../controller/CSScontroller")
+const { adddata } = require("../controller/datacontoller")
+const {customadd, Customquizlist} = require("../controller/Customcontoller")
 
 let Router = express.Router()
 let DbRouter = express.Router()
 let HTMLRouter = express.Router()
 let CSSRouter = express.Router()
 let authrouter = express.Router()
+let datarouter = express.Router()
+let Custom = express.Router()
 
 Router.post("/insert",insertquiz)
 Router.get("/list",quizlist)
@@ -22,6 +26,8 @@ CSSRouter.post("/insert",insertCSS)
 CSSRouter.get("/list",CSSlist)
 authrouter.post("/signup",Signup)
 authrouter.post("/login",Login)
+datarouter.post("/add",adddata)
+Custom.post("/customadd",customadd)
+Custom.get("/list",Customquizlist)
 
-
-module.exports={DbRouter,Router,HTMLRouter,CSSRouter,authrouter}
+module.exports={DbRouter,Router,HTMLRouter,CSSRouter,authrouter,datarouter,Custom}

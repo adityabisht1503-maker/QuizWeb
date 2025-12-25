@@ -1,7 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose");
 
-const { Router, DbRouter, HTMLRouter, CSSRouter, authrouter } = require("./routes/quizrouter");
+const { Router, DbRouter, HTMLRouter, CSSRouter, authrouter, datarouter, Custom } = require("./routes/quizrouter");
 let cors = require("cors")
 
 let app = express();
@@ -14,6 +14,8 @@ app.use("/",Router)
 app.use("/db",DbRouter)
 app.use("/html",HTMLRouter)
 app.use("/css",CSSRouter)
+app.use("/score",datarouter)
+app.use("/ct",Custom)
 app.get("/get",(req,res)=>{
   res.send("hello")
 })

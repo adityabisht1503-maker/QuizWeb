@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Certificate</title>
+<style>
+  body {
+    width: 1123px;
+    height: 794px;
+    margin: 0;
+    padding: 0;
+    font-family: "Georgia", serif;
+    background: linear-gradient(135deg, #f5f5f0 0%, #ffffff 50%, #f5f5f0 100%);
+  }
+  .jagah{
+    margin-top: 49px;
+  }
+  .certificate {
+    border: 20px solid;
+    border-image: linear-gradient(45deg, #1a1a1a, #2d2d2d, #1a1a1a) 1;
+    margin: 30px;
+    padding: 40px;
+    height: calc(100% - 140px);
+    position: relative;
+    background: white;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2), inset 0 0 50px rgba(0,0,0,0.03);
+  }
+  .inner-border {
+    border: 3px double #b8860b;
+    padding: 35px;
+    height: calc(100% - 70px);
+    text-align: center;
+    position: relative;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(245,245,240,0.3) 100%);
+  }
+  .inner-border::before {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 1px solid rgba(184,134,11,0.3);
+    pointer-events: none;
+  }
+  .logo {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1a1a1a;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  h1 {
+    font-size: 56px;
+    margin: 25px 0 15px;
+    color: #2d2d2d;
+    font-weight: normal;
+    font-family: "Brush Script MT", cursive, "Georgia", serif;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  .subtitle {
+    font-size: 18px;
+    color: #555;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+  .content {
+    font-size: 20px;
+    color: #333;
+    margin: 20px 0;
+  }
+  .name {
+    font-size: 46px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin: 25px 0;
+    border-bottom: 3px solid #b8860b;
+    display: inline-block;
+    padding: 0 40px 10px;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  .course {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin: 15px 0;
+  }
+  .score {
+    font-size: 18px;
+    margin-top: 15px;
+  }
+  .footer {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #444;
+  }
+  .signature {
+    text-align: center;
+  }
+  .signature-name {
+    font-family: "Brush Script MT", cursive, "Lucida Handwriting", cursive;
+    font-size: 36px;
+    color: #1a1a1a;
+    margin-bottom: 5px;
+    font-weight: normal;
+    font-style: italic;
+    transform: skewX(-5deg);
+    letter-spacing: 1px;
+  }
+  .signature-line {
+    border-top: 1px solid #333;
+    width: 200px;
+    margin: 5px auto;
+  }
+  .cert-id {
+    font-size: 12px;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+  <div class="certificate">
+    <div class="inner-border">
+      <div class="logo">QUIZ MASTER PLATFORM</div>
+      <h1>Certificate of Completion</h1>
+      <div class="subtitle">This certificate is proudly presented to</div>
+      <div class="name">{{NAME}}</div>
+      <div class="content">
+        for successfully completing the Quiz of
+      </div>
+      <div class="course">{{QUIZ_NAME}}</div>
+      <div class="score">
+        with a Grade <strong>{{SCORE}}</strong>
+      </div>
+      <div class="content">
+        Date of Completion: {{DATE}}
+      </div>
+     
+    </div>
+    <div class="footer">
+      <div class="signature">
+        <div class="signature-name">Aditya Bisht</div>
+        <div class="signature-line"></div>
+        <div>Director</div>
+      </div>
+      <div class="signature">
+        <div class="signature-name ">Tarun Shrivastava</div>
+        <div class="signature-line"></div>
+        <div>Head of Department</div>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
