@@ -1,7 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose");
 
-const { Router, DbRouter, HTMLRouter, CSSRouter, authrouter, datarouter, Custom } = require("./routes/quizrouter");
+const { Router, DbRouter, HTMLRouter, CSSRouter, authrouter, datarouter, Custom, verfiyRoute, Findroute, Airoute } = require("./routes/quizrouter");
 let cors = require("cors")
 
 let app = express();
@@ -16,6 +16,9 @@ app.use("/html",HTMLRouter)
 app.use("/css",CSSRouter)
 app.use("/score",datarouter)
 app.use("/ct",Custom)
+app.use("/api",verfiyRoute)
+app.use("/api",Findroute)
+app.use("/api",Airoute)
 app.get("/get",(req,res)=>{
   res.send("hello")
 })

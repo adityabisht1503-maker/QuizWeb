@@ -24,6 +24,9 @@ import QuizRules from './Quizrules.jsx'
 import Customquiz from './Customquiz.jsx'
 import Custom from './Custom.jsx'
 import ProtectedRoute from './ProtectedRoute.jsx'
+import Aiquiz from './Aiquiz.jsx'
+
+import Pro from './Pro.jsx'
 
 const route = createBrowserRouter([{path:"/",element:<App/>,
   children:[
@@ -41,7 +44,9 @@ const route = createBrowserRouter([{path:"/",element:<App/>,
         {path:"cssquiz",element:<CSS/>},
          {path:"Quizrules",element:<QuizRules/>},
          {path:"Customquiz",element:<Customquiz/>},
-      { path: "Custom/:id", element: <Custom/> }]}
+         {path:"Aiquiz",element:<Aiquiz/>},
+      { path: "Custom/:id", element: <Custom/> },
+    { path: "premium", element: <Pro/> }]}
     
   ]
 }])

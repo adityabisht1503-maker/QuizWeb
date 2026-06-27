@@ -37,7 +37,7 @@ const Header = () => {
    
   
    const dispatch = useDispatch()
-   const {isLoggedIn,user}= useSelector((state)=>state.auth)
+   const {isLoggedIn,user,plan}= useSelector((state)=>state.auth)
    const handleLogout = () => {
   
       handleswan()
@@ -108,6 +108,20 @@ const Header = () => {
              <FaRegCircleUser size={29} />
 
             <span className="text-capitalize">{user?.name}</span>
+          {plan === "Pro" && (
+    <span
+      className="ms-2 px-2 py-1 rounded-pill"
+      style={{
+        background: "linear-gradient(135deg,#facc15,#f59e0b)",
+        color: "#000",
+        fontSize: "0.6rem",
+        fontWeight: "700",
+        letterSpacing: "0.5px",
+      }}
+    >
+      PRO
+    </span>
+  )}
             <button
               type="button"
               className="btn btn-outline-light ms-4"

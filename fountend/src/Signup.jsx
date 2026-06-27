@@ -4,8 +4,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from 'sweetalert2'
 import api from "./api";
+import Loader from "./Loader";
+
 
 const Signup = () => {
+
+  const [showOtp, setShowOtp] = useState(false);
+const [otp, setOtp] = useState("");
+const [loading, setLoading] = useState(false);
 
   const swan = ()=>{
     Swal.fire({
@@ -34,15 +40,16 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  setLoading(true);
 
     try {
       const res = await api.post("/api/auth/signup", form);
 
       // Assuming API returns success with status or message
       if (res.data?.status === 1 || res.data?.message === "Signup successful") {
-        swan()
-
-        navigate("/login");
+        toast.success("otp sent successfully")
+         
+        setShowOtp(true); //
       } else {
         toast.error(res.data?.message || "Signup failed");
       }
@@ -56,77 +63,120 @@ const Signup = () => {
         toast.error(error.response?.data?.message || "Signup failed.");
       }
     }
+    finally{
+          setLoading(false);
+
+    }
   };
+  const handleOtpSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const res = await api.post("/api/auth/verify-otp", {
+      otp,
+      email,
+    });
+
+    if (res.data?.status === 1) {
+      toast.success("OTP Verified Successfully");
+      swan()
+      navigate("/login");
+    } else {
+      toast.error("Invalid OTP");
+    }
+  } catch (err) {
+    toast.error("OTP verification failed");
+  }
+  finally{
+    setLoading(false)
+  }
+};
+
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card p-4 shadow" style={{ maxWidth: "400px", width: "100%" }}>
-        <h3 className="text-center mb-4">Create Account</h3>
-        <form onSubmit={handleSubmit} autoComplete="on">
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              className="form-control"
-              placeholder="Enter your name"
-              required
-              value={name}
-              onChange={handleChange}
-              autoComplete="name"
-            />
-          </div>
+  <div className="container d-flex justify-content-center align-items-center vh-100">
+    <div className="card p-4 shadow" style={{ maxWidth: "400px", width: "100%" }}>
 
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email address
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="form-control"
-              placeholder="Enter your email"
-              required
-              value={email}
-              onChange={handleChange}
-              autoComplete="email"
-            />
-          </div>
+      {!showOtp ? (
+        <>
+          <h3 className="text-center mb-4">Create Account</h3>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="form-control"
-              placeholder="Enter your password"
-              required
-              value={password}
-              onChange={handleChange}
-              autoComplete="new-password"
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                className="form-control"
+                value={name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <button type="submit" className="btn btn-success w-100">
-            Sign Up
-          </button>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="form-control"
+                value={email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className="text-center mt-3">
-            <small>
-              Already have an account?{" "}
-              <Link to="/login" className="text-decoration-none">
-                Login
-              </Link>
-            </small>
-          </div>
-        </form>
-      </div>
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                className="form-control"
+                value={password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+           <button className="btn btn-success w-100" disabled={loading}>
+  {loading ? "Creating account..." : "Sign Up"}
+</button>
+
+{loading && <Loader />}
+
+
+          </form>
+        </>
+      ) : (
+        <>
+          <h3 className="text-center mb-4">Verify OTP</h3>
+
+          <form onSubmit={handleOtpSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Enter OTP</label>
+              <input
+                type="text"
+                className="form-control"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter 6-digit OTP"
+                required
+              />
+            </div>
+
+           <button className="btn btn-primary w-100" disabled={loading}>
+  {loading ? "Verifying..." : "Verify OTP"}
+</button>
+
+{loading && <Loader />}
+          </form>
+        </>
+      )}
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Signup;

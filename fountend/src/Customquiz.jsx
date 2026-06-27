@@ -53,55 +53,45 @@ const Customquiz = () => {
     });
     setError('');
   };
-
+  const Name = "CUSTOM";
   const handleSubmitQuiz = async () => {
-    if (questions.length === 0) {
-      setError('Please add at least one question');
-      return;
-    }
+  if (questions.length === 0) {
+    setError("Please add at least one question");
+    return;
+  }
 
-    setLoading(true);
-    setError('');
+  setLoading(true);
+  setError("");
 
-    // Format data for backend
-    const quizData = {
-      quizName: quizName,
-      questions: questions.map(q => ({
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer
-      }))
-    };
-
-    try {
-      const response = await api("/ct/customadd", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quizData)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit quiz');
-      }
-      
-      const data = await response.json();
-      console.log('Quiz submitted successfully:', data);
-      
-      // Store the quiz ID from response
-      if (data.quiz && data.quiz._id) {
-        setCreatedQuizId(data.quiz._id);
-      }
-      
-      setStep('complete');
-    } catch (err) {
-      setError('Failed to submit quiz. Please try again.');
-      console.error('Error submitting quiz:', err);
-    } finally {
-      setLoading(false);
-    }
+  const quizData = {
+    Name,
+    quizName,
+    questions: questions.map((q) => ({
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+    })),
   };
+
+  try {
+    const res = await api.post("/ct/customadd", quizData);
+
+    console.log("Quiz submitted successfully:", res.data);
+
+    if (res.data.quiz && res.data.quiz._id) {
+      setCreatedQuizId(res.data.quiz._id);
+    }
+
+    setStep("complete");
+  } catch (err) {
+    setError("Failed to submit quiz. Please try again.");
+    console.error("Error submitting quiz:", err.response?.data || err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  
 
   const handleReset = () => {
     setStep('quizName');

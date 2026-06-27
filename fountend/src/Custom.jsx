@@ -243,15 +243,7 @@ useEffect(() => {
                       You scored {score} out of {quiz.length}
                     </p>
                   </div>
-                  {percentage >= 30 && (
-                    <button
-                      onClick={dounloudpdf}
-                      type="button"
-                      className="btn btn-secondary btn-lg mt-4 px-5"
-                    >
-                      Download Certificate
-                    </button>
-                  )}
+                  
 
                   {/* Review Answers */}
                   <div className="text-start mt-5">

@@ -1,6 +1,10 @@
 let mongoose = require("mongoose")
 
 const quizschema = mongoose.Schema({
+  Name:{
+type: String,
+    required: true
+  },
   Quizname: {
     type: String,
     required: true

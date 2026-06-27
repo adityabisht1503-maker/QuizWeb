@@ -2,10 +2,32 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./api";
+import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
 
 const Quizlist = () => {
   const navigate = useNavigate();
   const [customQuizzes, setCustomQuizzes] = useState([]);
+  const [proPeriod, setproPeriod] = useState(null)
+       
+   const {plan}= useSelector((state)=>state.auth)
+  const getRemainingDays = (proPeriod) => {
+  if (!proPeriod) return null;
+
+  const start = new Date(proPeriod);
+  const today = new Date();
+
+  start.setUTCHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
+
+  const daysUsed =
+    (today.getTime() - start.getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  const remaining = 30 - Math.floor(daysUsed);
+
+  return remaining > 0 ? remaining : 0;
+};
 
   const handleclick = () => {
     navigate('/osquiz');
@@ -22,7 +44,28 @@ const Quizlist = () => {
   const Custom = () => {
     navigate('/Customquiz');
   };
+  const Aiquiz = () => {
+    navigate('/Aiquiz');
+  };
 
+
+const expirydate = async () => {
+  try {
+    const res = await api.get(
+      "/api/expiry",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    setproPeriod(res.data.Properiod);
+
+  } catch (error) {
+    console.error("Error fetching expiry date:", error);
+  }
+};
   // Fetch all custom quizzes with full data
   const fetchquiz = () => {
     api
@@ -37,7 +80,48 @@ const Quizlist = () => {
 
   useEffect(() => {
     fetchquiz();
+    expirydate();
   }, []);
+
+  const handleUpgrade=()=>{
+    navigate("/premium")
+  }
+
+const handledelete = (id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You really want to delete this quiz?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.post("/ct/customdelete", { id });
+        console.log(id);
+        
+
+        Swal.fire({
+          text: "Delete Successfully",
+          icon: "success",
+        });
+
+        
+        setCustomQuizzes((prev) =>
+          prev.filter((quiz) => quiz._id !== id)
+        );
+      } catch (err) {
+        Swal.fire({
+          text: "Failed to delete quiz",
+          icon: "error",
+        });
+      }
+    }
+  });
+};
+
+
 
   return (
     <>
@@ -284,6 +368,14 @@ const Quizlist = () => {
 
       <main className='d-flex gap-4 justify-content-center align-items-center mar flex-wrap'>
         {/* Pre-built quizzes */}
+{proPeriod && (
+  <div className="w-100 d-flex justify-content-center mb-3">
+    <p className="pro-gradient shadow-sm px-4 py-2">
+      ⏳ Plan expires in {getRemainingDays(proPeriod)} days
+    </p>
+  </div>
+)}
+         
         <div className="card quiz-card">
           <div className="quiz-card-img-wrapper">
             <img src="/1.jpg" className="card-img-top" alt="Operating System" />
@@ -351,12 +443,32 @@ const Quizlist = () => {
         {/* Custom quizzes - dynamically render each with unique ID */}
         {customQuizzes.map(quiz => (
           <div className="card quiz-card" key={quiz._id}>
+            
+
             <div className="quiz-card-img-wrapper">
-              <img src="/custom1.png" className="card-img-top" alt={quiz.Quizname} />
+              <img
+  src={
+    quiz.Name === "AI"
+      ? "/bittu.webp"
+      : quiz.Name === "CUSTOM"
+      ? "/custom1.png"
+      : "/quiz-cover.webp"
+  }
+  className="card-img-top"
+  alt={quiz.Quizname}
+/>
+
               <div className="quiz-card-img-overlay">
                 <div className="overlay-icon">🎯</div>
               </div>
-              <div className="custom-badge">Custom</div>
+    <button
+  className="close-btn"
+onClick={() => handledelete(quiz._id)}  style={{ color: "red" }}
+>
+  ✖
+</button>
+              <div className="custom-badge">{quiz.Name==="AI"?"Ai":"Custom"}</div>
+              
             </div>
             <div className="card-body">
               <h5 className="card-title">{quiz.Quizname}</h5>
@@ -394,6 +506,60 @@ const Quizlist = () => {
             </button>
           </div>
         </div>
+{/* Create Ai Quiz  */}
+        <div className="card quiz-card">
+  <div className="quiz-card-img-wrapper">
+    <img
+      src="/aii.webp"
+      className="card-img-top"
+      alt="AI Powered Quiz Builder"
+    />
+
+    <div className="quiz-card-img-overlay">
+      <div className="overlay-icon">🤖</div>
+    </div>
+
+    <div className="custom-badge">AI Powered</div>
+  </div>
+
+  <div className="card-body">
+    <h5 className="card-title">🧠 AI Quiz Builder</h5>
+
+    <p className="card-text">
+      Create smart, personalized quizzes instantly using AI.
+      Choose topics, difficulty, and let Quizmaster  work.
+    </p>
+
+    <button onClick={Aiquiz} className="quiz-btn">
+      <span>✨</span>
+<span>Build Quiz</span>      <span>→</span>
+    </button>
+  </div>
+</div>
+
+{plan === "Free" ? (
+  <div className="card quiz-card premium pro-card">
+    <div className="quiz-card-img-wrapper pro-card-img-wrapper">
+      <div className="overlay-icon">👑</div>
+      <div className="pro-badge">✦ Pro</div>
+    </div>
+
+    <div className="card-body text-center">
+      <h5 className="card-title">
+        Go <span>Pro</span>
+      </h5>
+      <p className="card-text">Unlock your full potential</p>
+
+      <button
+        className="btn-upgrade"
+        onClick={handleUpgrade}
+      >
+        ✦ Upgrade Now
+      </button>
+    </div>
+  </div>
+) : null}
+
 
         {/* Coming Soon Card */}
         <div className="card quiz-card">
