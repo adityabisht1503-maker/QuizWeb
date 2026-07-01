@@ -63,7 +63,7 @@ const Signup = async (req, res) => {
     console.timeEnd("Save User");
 
     console.time("Send Verification Email");
-    await sendVerificationEmail(email, otp);
+ 
     console.timeEnd("Send Verification Email");
 
     console.timeEnd("Total Signup");
