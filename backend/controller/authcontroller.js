@@ -17,20 +17,37 @@ const generateOTP = () =>
 ========================= */
 const Signup = async (req, res) => {
   try {
+    console.time("Total Signup");
+
     const { name, email, password } = req.body;
 
+    console.time("Validate Email");
     if (!validator.isEmail(email)) {
+      console.timeEnd("Validate Email");
       return res.json({ status: 0, message: "Invalid email format" });
     }
+    console.timeEnd("Validate Email");
 
+    console.time("Find Existing User");
     const existingUser = await Passwordmodel.findOne({ email });
+    console.timeEnd("Find Existing User");
+
     if (existingUser) {
+      console.timeEnd("Total Signup");
       return res.json({ status: 0, message: "User already exists" });
     }
 
+    console.time("Hash Password");
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.timeEnd("Hash Password");
+
+    console.time("Generate OTP");
     const otp = generateOTP();
+    console.timeEnd("Generate OTP");
+
+    console.time("Hash OTP");
     const hashedOtp = await bcrypt.hash(otp, 10);
+    console.timeEnd("Hash OTP");
 
     const user = new Passwordmodel({
       name,
@@ -41,14 +58,25 @@ const Signup = async (req, res) => {
       isVerified: false,
     });
 
+    console.time("Save User");
     await user.save();
+    console.timeEnd("Save User");
+
+    console.time("Send Verification Email");
     await sendVerificationEmail(email, otp);
+    console.timeEnd("Send Verification Email");
+
+    console.timeEnd("Total Signup");
 
     return res.json({
       status: 1,
       message: "Verification email sent",
     });
+
   } catch (err) {
+    console.error("Signup Error:", err);
+    console.timeEnd("Total Signup");
+
     return res.status(500).json({
       status: 0,
       message: err.message,

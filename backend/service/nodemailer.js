@@ -1,8 +1,6 @@
 require("dotenv").config();
 
 const nodemailer =   require("nodemailer");
-
- const sendVerificationEmail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -10,6 +8,9 @@ const nodemailer =   require("nodemailer");
       pass: process.env.EMAIL_PASS
     }
   });
+
+
+ const sendVerificationEmail = async (email, otp) => {
 
   // const link = `http://localhost:${process.env.PORT}/verify/${token}`;
 
