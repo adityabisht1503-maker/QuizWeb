@@ -123,34 +123,36 @@ const [form, setform] = useState({
 
  const handleSubmit = async (e) => {
   e.preventDefault();
+
+  setLoading(true);
+
   try {
     const res = await api.post("/api/auth/login", form);
 
-    // ✅ check if login is actually successful
     if (res.data?.status === 1 || res.data?.message === "Login successful") {
-     
-   localStorage.setItem('token',res.data.token)
-   localStorage.setItem('user',JSON.stringify(res.data.user))
-       localStorage.setItem('Plan',res.data.Plan)
-       
-            dispatch(login({
-        user: res.data.user,
-        plan: res.data.Plan,
-      }));
-     
-      
-      navigate("/quizlist");
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("Plan", res.data.Plan);
+
+      dispatch(
+        login({
+          user: res.data.user,
+          plan: res.data.Plan,
+        })
+      );
+
       showCustomUserToast(res.data.user.name);
-     
+      navigate("/quizlist");
 
     } else {
       toast.error(res.data?.message || "Login failed");
     }
 
   } catch (error) {
-    // ✅ this runs when login fails (e.g. wrong password, server error)
-    console.error("Login error:", error.response?.data || error.message);
     toast.error(error.response?.data?.message || "Login failed.");
+  } finally {
+    setLoading(false);
   }
 };
 const FindGmail = async (e) => {
@@ -273,9 +275,24 @@ const handleOtpSubmit = async (e) => {
     />
   </div>
 
-  <button type="submit" className="btn btn-primary w-100">
-    Login
-  </button>
+<button
+  type="submit"
+  className="btn btn-primary w-100"
+  disabled={loading}
+>
+  {loading ? (
+    <>
+      <span
+        className="spinner-border spinner-border-sm me-2"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      Logging in...
+    </>
+  ) : (
+    "Login"
+  )}
+</button>
 </form>
 
 

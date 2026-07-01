@@ -45,7 +45,7 @@ const [loading, setLoading] = useState(false);
     try {
       const res = await api.post("/api/auth/signup", form);
 
-      // Assuming API returns success with status or message
+      
       if (res.data?.status === 1 || res.data?.message === "Signup successful") {
         toast.success("otp sent successfully")
          

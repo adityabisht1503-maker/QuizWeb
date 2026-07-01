@@ -23,7 +23,7 @@ const isValidUTR = utrRegex.test(txnId);
     try {
       setLoading(true);
       const res = await api.post(
-        "http://localhost:3000/api/submit-transaction",
+        "/api/submit-transaction",
         { transactionId: txnId },
         {
           headers: {
