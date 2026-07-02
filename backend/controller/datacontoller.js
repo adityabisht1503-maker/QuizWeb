@@ -48,16 +48,26 @@ let adddata = async (req, res) => {
   else if (numericScore >= 30) return "D+";
   
 }
+console.log("1. Starting certificate generation");
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+const browser = await puppeteer.launch();
 
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true
-    });
+console.log("2. Browser launched");
 
+const page = await browser.newPage();
+
+console.log("3. Page created");
+
+await page.setContent(html);
+
+console.log("4. HTML loaded");
+
+const pdf = await page.pdf({
+  format: "A4",
+  printBackground: true,
+});
+
+console.log("5. PDF generated");
     await browser.close();
 
     // Send PDF response
