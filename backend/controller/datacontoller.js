@@ -1,11 +1,7 @@
+const PDFDocument = require("pdfkit");
 const { DataModel } = require("../model/Datamodel");
-const fs = require("fs");
-const path = require("path");
 
-const puppeteer = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
-
-let adddata = async (req, res) => {
+const adddata = async (req, res) => {
   try {
     const { Name, Score, Quizname } = req.body;
 
@@ -15,80 +11,134 @@ let adddata = async (req, res) => {
       { new: true, upsert: true }
     );
 
-    const certificateId =
-      "CERT-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-
+    const grade = getGrade(Score);
     const date = new Date().toLocaleDateString();
 
-    const templatePath = path.join(__dirname, "certificate.html");
-
-    let html = fs.readFileSync(templatePath, "utf8");
-
-    function getGrade(score) {
-      const numericScore = Number(score) * 10;
-
-      if (numericScore >= 90) return "A+";
-      if (numericScore >= 80) return "A";
-      if (numericScore >= 70) return "B+";
-      if (numericScore >= 60) return "B";
-      if (numericScore >= 50) return "C+";
-      if (numericScore >= 40) return "C";
-      if (numericScore >= 30) return "D+";
-
-      return "F";
-    }
-
-    html = html
-      .replace("{{NAME}}", Name)
-      .replace("{{QUIZ_NAME}}", Quizname)
-      .replace("{{SCORE}}", getGrade(Score))
-      .replace("{{DATE}}", date)
-      .replace("{{CERT_ID}}", certificateId);
-
-    console.log("1. Starting certificate generation");
-
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-      headless: true,
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margin: 50,
     });
 
-    console.log("2. Browser launched");
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${Name}_certificate.pdf`
+    );
 
-    const page = await browser.newPage();
+    doc.pipe(res);
 
-    console.log("3. Page created");
+    // Outer Border
+    doc
+      .lineWidth(6)
+      .rect(20, 20, 802, 555)
+      .stroke();
 
-    await page.setContent(html, {
-      waitUntil: "networkidle0",
-    });
+    // Inner Border
+    doc
+      .lineWidth(2)
+      .rect(35, 35, 772, 525)
+      .stroke();
 
-    console.log("4. HTML loaded");
+    // Title
+    doc
+      .fontSize(18)
+      .text("QUIZ MASTER PLATFORM", {
+        align: "center",
+      });
 
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-    });
+    doc.moveDown();
 
-    console.log("5. PDF generated");
+    doc
+      .fontSize(32)
+      .text("Certificate of Completion", {
+        align: "center",
+      });
 
-    await browser.close();
+    doc.moveDown(2);
 
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=${Name}_certificate.pdf`,
-    });
+    doc
+      .fontSize(18)
+      .text("This certificate is proudly presented to", {
+        align: "center",
+      });
 
-    return res.send(pdf);
+    doc.moveDown();
+
+    doc
+      .fontSize(30)
+      .text(Name.toUpperCase(), {
+        align: "center",
+        underline: true,
+      });
+
+    doc.moveDown(2);
+
+    doc
+      .fontSize(18)
+      .text("For successfully completing the quiz", {
+        align: "center",
+      });
+
+    doc.moveDown();
+
+    doc
+      .fontSize(24)
+      .text(Quizname, {
+        align: "center",
+      });
+
+    doc.moveDown();
+
+    doc
+      .fontSize(18)
+      .text(`Grade: ${grade}`, {
+        align: "center",
+      });
+
+    doc.moveDown();
+
+    doc
+      .fontSize(16)
+      .text(`Date: ${date}`, {
+        align: "center",
+      });
+
+    // Signatures
+
+    doc.fontSize(18);
+
+    doc.text("__________________", 120, 470);
+    doc.text("Aditya Bisht", 130, 495);
+    doc.text("Director", 155, 520);
+
+    doc.text("__________________", 560, 470);
+    doc.text("Tarun Shrivastava", 545, 495);
+    doc.text("Head of Department", 530, 520);
+
+    doc.end();
   } catch (err) {
-    console.error("Certificate Error:");
     console.error(err);
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: err.message,
+      message: "Error generating certificate",
     });
   }
 };
+
+function getGrade(score) {
+  const s = Number(score) * 10;
+
+  if (s >= 90) return "A+";
+  if (s >= 80) return "A";
+  if (s >= 70) return "B+";
+  if (s >= 60) return "B";
+  if (s >= 50) return "C+";
+  if (s >= 40) return "C";
+  if (s >= 30) return "D+";
+
+  return "F";
+}
 
 module.exports = { adddata };
